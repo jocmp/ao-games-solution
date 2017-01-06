@@ -1,0 +1,11 @@
+def main = "edu.gvsu.cis.campbjos.connectfour.ConnectFourAI"
+
+jar {
+    manifest {
+        attributes('Main-Class': main)
+    }
+}
+
+dependencies {
+
+}

@@ -1,0 +1,25 @@
+subprojects {
+
+    apply plugin: "java"
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile "junit:junit:4.12"
+    }
+}
+
+// Task to run build.gradle
+// and deploy to game directory
+task deploySolution(type: GradleBuild) {
+    tasks = ['build', 'copyToGameDirectory']
+}
+
+task copyToGameDirectory(type: Exec) {
+    // Copy over the binary
+    commandLine 'cp' 'solution/build/libs/solution.jar' '../connect-four/'
+    // Give read permission
+    commandLine 'chmod' 'u+x' '../connect-four/solution.jar'
+}
