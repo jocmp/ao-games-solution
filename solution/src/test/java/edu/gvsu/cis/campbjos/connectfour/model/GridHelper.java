@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class GridHelper {
 
     protected static String createEmptyGrid() {
-        return Arrays.deepToString(new int[6][7]);
+        return Arrays.deepToString(new int[Board.ROW_SIZE][Board.COLUMN_SIZE]);
     }
 
 }

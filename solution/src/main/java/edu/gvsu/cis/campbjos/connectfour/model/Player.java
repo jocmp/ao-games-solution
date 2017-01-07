@@ -24,6 +24,13 @@ public class Player {
         }
     }
 
+    public static Player createOpponent(final Player currentPlayer) {
+        if (currentPlayer.getNumber() == 1) {
+            return new Player(PLAYER_TWO_VALUE);
+        }
+        return new Player(PLAYER_ONE_VALUE);
+    }
+
     int getNumber() {
         return number;
     }

@@ -6,19 +6,26 @@ import java.util.Set;
 import static edu.gvsu.cis.campbjos.connectfour.model.Board.COLUMN_SIZE;
 import static edu.gvsu.cis.campbjos.connectfour.model.Board.ROW_SIZE;
 
-public class GameState {
+class GameState {
 
-    private Board board;
+    private final Board board;
+    private final Player artificialPlayer;
+    private final Player opponent;
 
-    private GameState(Board board) {
+
+    GameState(Board board, Player currentPlayer) {
         this.board = board;
+        this.artificialPlayer = currentPlayer;
+        this.opponent = Player.createOpponent(currentPlayer);
     }
 
-    public static GameState createFromJson(final String serializedBoard) {
-        return new GameState(Board.createFromJson(serializedBoard));
+    static GameState createFromJson(final String serializedBoard, final String playerValue) {
+        return new GameState(
+                Board.createFromJson(serializedBoard),
+                new Player(playerValue));
     }
 
-    public Board getBoard() {
+    Board getBoard() {
         return board;
     }
 
@@ -28,9 +35,8 @@ public class GameState {
      * @return a list of available spaces
      */
     Set<Integer> getAvailableMoves() {
-        int lastRow = ROW_SIZE - 1;
         Set<Integer> availableMoves = new HashSet<>();
-        for (int row = ROW_SIZE; row >= 0; row--) {
+        for (int row = ROW_SIZE - 1; row >= 0; row--) {
             for (int column = 0; column < COLUMN_SIZE; column++) {
                 if (board.isOpenSpace(row, column)) {
                     availableMoves.add(column);
@@ -39,4 +45,6 @@ public class GameState {
         }
         return availableMoves;
     }
+
+//    private boolean checkWinnerVertical
 }
