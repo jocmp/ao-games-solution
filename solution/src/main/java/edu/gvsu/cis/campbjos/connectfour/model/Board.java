@@ -18,8 +18,8 @@ public class Board {
         }.getType();
     }
 
-    public static final int COLUMN_SIZE = 7;
-    public static final int ROW_SIZE = 6;
+    static final int COLUMN_SIZE = 7;
+    static final int ROW_SIZE = 6;
 
     private final List<List<Integer>> grid;
 
@@ -28,15 +28,15 @@ public class Board {
         this.grid.addAll(grid);
     }
 
-    public static Board createFromJson(final String grid) {
+    static Board createFromJson(final String grid) {
         // Serialize from type;
         return new Board(new Gson().fromJson(grid, GRID_TYPE));
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         for (int row = 0; row < ROW_SIZE; row++) {
             for (int column = 0; column < COLUMN_SIZE; column++) {
-                if (!at(row, column).equals(0)) {
+                if (!isOpenSpace(row, column)) {
                     return false;
                 }
             }
@@ -44,15 +44,24 @@ public class Board {
         return true;
     }
 
-    public Integer at(int row, int column) throws IndexOutOfBoundsException {
-        boolean isColumnInBounds = column < COLUMN_SIZE && column >= 0;
-        boolean isRowInBounds = row < ROW_SIZE && column >= 0;
-
-        if (!(isColumnInBounds && isRowInBounds)) {
-            throw new IndexOutOfBoundsException(
-                    format("column=%s row=%s is out of bounds!", column, row));
+    void placePiece(Player player, int row, int column) {
+        if (isOpenSpace(row, column)) {
+            grid.get(row).set(column, player.getNumber());
         }
+    }
 
-        return grid.get(row).get(column);
+    int at(int row, int column) throws IndexOutOfBoundsException {
+        boolean isColumnInBounds = column < COLUMN_SIZE && column >= 0;
+        boolean isRowInBounds = row < ROW_SIZE && row >= 0;
+
+        if (isColumnInBounds && isRowInBounds) {
+            return grid.get(row).get(column);
+        }
+        throw new IndexOutOfBoundsException(
+                format("row=%s column=%s is out of bounds!", row, column));
+    }
+
+    boolean isOpenSpace(int row, int column) {
+        return at(row, column) == 0;
     }
 }
