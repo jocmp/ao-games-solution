@@ -55,7 +55,7 @@ public class Player {
         }
     }
 
-    int score(GameState gameState) {
+    private int score(GameState gameState) {
         if (gameState.isWinner(this)) {
             return 10;
         }

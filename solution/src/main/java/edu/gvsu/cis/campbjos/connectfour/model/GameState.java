@@ -22,6 +22,15 @@ public class GameState {
         this.winner = checkForWinner();
     }
 
+    private int checkForWinner() {
+        if (isVerticalWinner() || isHorizontalWin()) {
+            return currentPlayer.getPiece();
+        } else if (isLoser(currentPlayer)) {
+            return opponent.getPiece();
+        }
+        return 0;
+    }
+
     public static GameState createFromJson(final String serializedBoard, final String playerValue) {
         return new GameState(
                 Board.createFromJson(serializedBoard),
@@ -68,40 +77,62 @@ public class GameState {
         return gameState;
     }
 
-    int checkForWinner() {
-        if (isVerticalWinner()) {
-            return currentPlayer.getPiece();
-        } else if (isLoser(currentPlayer)) {
-            return opponent.getPiece();
-        }
-        return 0;
-    }
-
     Player getCurrentPlayer() {
         return currentPlayer;
     }
 
     private boolean isVerticalWinner() {
         int contiguousPieces = 0;
-        for (int column = 0; column < COLUMN_SIZE; column++) {
-            for (int row = 0; row < ROW_SIZE - 1; row++) {
-
+        for (int row = 0; row < ROW_SIZE - 1; row++) {
+            for (int column = 0; column < COLUMN_SIZE; column++) {
                 int currentPiece = board.at(row, column);
-                int playerPiece = currentPlayer.getPiece();
+                int nextPiece = board.at(row + 1, column);
 
-                if (currentPiece != playerPiece) {
-                    continue;
-                }
-                if (contiguousPieces == 0) {
-                    contiguousPieces++;
-                }
-                if (board.at(row + 1, column) == playerPiece) {
-                    contiguousPieces++;
-                } else {
-                    contiguousPieces = 0;
+                contiguousPieces = getSumOfPieces(contiguousPieces, currentPiece, nextPiece);
+
+                if (contiguousPieces >= PIECE_COUNT_TO_WIN) {
+                    return true;
                 }
             }
         }
         return contiguousPieces >= PIECE_COUNT_TO_WIN;
+    }
+
+    private boolean isHorizontalWin() {
+        int contiguousPieces = 0;
+        for (int row = 0; row < ROW_SIZE; row++) {
+            for (int column = 0; column < COLUMN_SIZE - 1; column++) {
+                int currentPiece = board.at(row, column);
+                int nextPiece = board.at(row, column + 1);
+                contiguousPieces = getSumOfPieces(contiguousPieces,
+                        currentPiece,
+                        nextPiece);
+
+                if (contiguousPieces >= PIECE_COUNT_TO_WIN) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getSumOfPieces(final int runningTotal,
+                               final int currentPiece, final int nextPiece) {
+        int contiguousPieces = runningTotal;
+        int playerPiece = currentPlayer.getPiece();
+
+        if (currentPiece != playerPiece) {
+            return contiguousPieces;
+        }
+        if (contiguousPieces == 0) {
+            contiguousPieces++;
+        }
+        if (nextPiece == playerPiece) {
+            contiguousPieces++;
+        } else {
+            contiguousPieces = 0;
+        }
+
+        return contiguousPieces;
     }
 }

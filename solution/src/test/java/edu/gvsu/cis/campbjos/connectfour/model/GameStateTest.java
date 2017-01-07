@@ -14,7 +14,7 @@ public class GameStateTest {
 
     @Test
     public void createValidGameState() throws Exception {
-        GameState gameState = GameState.createFromJson("[[]]", PLAYER_ONE_VALUE);
+        GameState gameState = GameState.createFromJson(createEmptyGrid(), PLAYER_ONE_VALUE);
 
         assertNotNull(gameState);
     }
