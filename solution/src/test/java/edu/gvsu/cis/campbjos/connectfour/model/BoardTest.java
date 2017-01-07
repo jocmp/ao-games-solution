@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
+import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
 import static java.util.Arrays.deepToString;
 import static org.junit.Assert.*;
 
@@ -23,24 +24,6 @@ public class BoardTest {
         Board board = Board.createFromJson(serializedGrid);
 
         assertNotNull(board);
-    }
-
-    @Test
-    public void isEmpty() throws Exception {
-        String serializedGrid = deepToString(grid);
-
-        Board board = Board.createFromJson(serializedGrid);
-
-        assertTrue(board.isEmpty());
-    }
-
-    @Test
-    public void isNotEmpty() throws Exception {
-        grid[5][0] = 2;
-
-        Board board = Board.createFromJson(deepToString(grid));
-
-        assertFalse(board.isEmpty());
     }
 
     @Test
@@ -85,7 +68,6 @@ public class BoardTest {
         checkAtInvalidIndex(row, column);
     }
 
-
     private void checkAtInvalidIndex(int row, int column) {
         Board board = Board.createFromJson(createEmptyGrid());
         String expectedMessage = String.format("row=%s column=%s is out of bounds!", row, column);
@@ -100,5 +82,24 @@ public class BoardTest {
         assertEquals(expectedMessage, actualErrorMessage);
     }
 
+    @Test
+    public void checkMatchingToString() {
+        String inputJson = createFullBoard();
+        Board board = Board.createFromJson(inputJson);
+
+        String boardJson = board.toString();
+
+        assertEquals(inputJson, boardJson);
+    }
+
+    @Test
+    public void checkMatchingDuplicate() {
+        String inputJson = createFullBoard();
+        Board board = Board.createFromJson(inputJson);
+
+        Board duplicateBoard = board.duplicate();
+
+        assertEquals(board.toString(), duplicateBoard.toString());
+    }
 
 }

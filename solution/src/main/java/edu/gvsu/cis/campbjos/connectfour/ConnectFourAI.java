@@ -1,5 +1,7 @@
 package edu.gvsu.cis.campbjos.connectfour;
 
+import edu.gvsu.cis.campbjos.connectfour.model.GameState;
+
 /**
  * Format:
  * <code>
@@ -12,13 +14,19 @@ public class ConnectFourAI {
     private static final String PLAYER_FLAG = "-p";
     private static final String TIMEOUT_FLAG = "-t";
 
-    private ConnectFourAI(String board, String player, int timeout) {
+    private final GameState gameState;
 
+    private ConnectFourAI(String board, String player, int timeout) {
+        gameState = GameState.createFromJson(board, player);
+    }
+
+    private int getMove() {
+        return gameState.getMove();
     }
 
     public static void main(String[] args) {
         final ConnectFourAI connectFourAI = parseConnectFourState(args);
-
+        System.exit(connectFourAI.getMove());
     }
 
     private static ConnectFourAI parseConnectFourState(final String[] args) {

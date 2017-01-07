@@ -28,24 +28,16 @@ public class Board {
     }
 
     static Board createFromJson(final String grid) {
-        // Serialize from type;
+        // Serialize from type
         return new Board(new Gson().fromJson(grid, GRID_TYPE));
     }
 
-    boolean isEmpty() {
-        for (int row = 0; row < ROW_SIZE; row++) {
-            for (int column = 0; column < COLUMN_SIZE; column++) {
-                if (!isOpenSpace(row, column)) {
-                    return false;
-                }
+    void placePiece(Player player, int column) {
+        for (int row = ROW_SIZE - 1; row >= 0; row--) {
+            if (isOpenSpace(row, column)) {
+                grid.get(row).set(column, player.getPiece());
+                return;
             }
-        }
-        return true;
-    }
-
-    void placePiece(Player player, int row, int column) {
-        if (isOpenSpace(row, column)) {
-            grid.get(row).set(column, player.getNumber());
         }
     }
 
@@ -62,5 +54,18 @@ public class Board {
 
     boolean isOpenSpace(int row, int column) {
         return at(row, column) == 0;
+    }
+
+    Board duplicate() {
+        return createFromJson(this.toString());
+    }
+
+    /**
+     * @return a formatted board in the same form
+     * as it's input from {@link #createFromJson(String)}
+     */
+    @Override
+    public String toString() {
+        return grid.toString();
     }
 }

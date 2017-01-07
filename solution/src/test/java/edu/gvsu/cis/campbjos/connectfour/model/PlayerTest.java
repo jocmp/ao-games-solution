@@ -13,14 +13,14 @@ public class PlayerTest {
     public void createPlayerOne() {
         Player playerOne = new Player(PLAYER_ONE_ARG);
 
-        assertEquals(playerOne.getNumber(), 1);
+        assertEquals(playerOne.getPiece(), 1);
     }
 
     @Test
     public void createPlayerTwo() {
         Player playerTwo = new Player(PLAYER_TWO_ARG);
 
-        assertEquals(playerTwo.getNumber(), 2);
+        assertEquals(playerTwo.getPiece(), 2);
     }
 
     @Test
@@ -48,8 +48,8 @@ public class PlayerTest {
     private void createOpponentForPlayer(String playerArg, int expectedOpponentNumber) {
         Player currentPlayer = new Player(playerArg);
 
-        Player opponent = Player.createOpponent(currentPlayer);
+        Player opponent = Player.nextPlayer(currentPlayer);
 
-        assertEquals(opponent.getNumber(), expectedOpponentNumber);
+        assertEquals(opponent.getPiece(), expectedOpponentNumber);
     }
 }
