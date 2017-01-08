@@ -25,6 +25,10 @@ public class ConnectFourAI {
     }
 
     public static void main(String[] args) {
+        if (args.length < 3) {
+            System.out.println("Not enough arguments!");
+            return;
+        }
         final ConnectFourAI connectFourAI = parseConnectFourState(args);
         System.exit(connectFourAI.getMove());
     }

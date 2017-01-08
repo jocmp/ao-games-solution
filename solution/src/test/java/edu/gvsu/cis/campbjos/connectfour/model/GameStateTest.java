@@ -2,10 +2,11 @@ package edu.gvsu.cis.campbjos.connectfour.model;
 
 import org.junit.Test;
 
+import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_WIN;
+import static edu.gvsu.cis.campbjos.connectfour.model.GameState.createFromJson;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class GameStateTest {
@@ -14,7 +15,7 @@ public class GameStateTest {
 
     @Test
     public void createValidGameState() throws Exception {
-        GameState gameState = GameState.createFromJson(createEmptyGrid(), PLAYER_ONE_VALUE);
+        GameState gameState = createFromJson(createEmptyGrid(), PLAYER_ONE_VALUE);
 
         assertNotNull(gameState);
     }
@@ -46,11 +47,30 @@ public class GameStateTest {
     }
 
     @Test
+    public void stopIfColumnOneIsFull() {
+        Board board = Board.createFromJson(createEmptyGrid());
+        Player player = new Player(PLAYER_ONE_VALUE);
+        Player opponent = Player.nextPlayer(player);
+
+        int columnOne = 1;
+        for (int i = 0; i < 3; i++) {
+            board.placePiece(player, columnOne);
+        }
+        board.placePiece(opponent, columnOne);
+        board.placePiece(player, columnOne);
+        board.placePiece(player, columnOne);
+
+        GameState gameSate = new GameState(board, player);
+
+        assertFalse(gameSate.getAvailableMoves().contains(columnOne));
+    }
+
+    @Test
     public void checkForVerticalWin() {
         Board board = Board.createFromJson(createEmptyGrid());
         Player player = new Player(PLAYER_ONE_VALUE);
 
-        for (int i = 0; i < GameState.PIECE_COUNT_TO_WIN; i++) {
+        for (int i = 0; i < PIECE_COUNT_TO_WIN; i++) {
             board.placePiece(player, 0);
         }
 
@@ -64,7 +84,7 @@ public class GameStateTest {
         Board board = Board.createFromJson(createEmptyGrid());
         Player player = new Player(PLAYER_ONE_VALUE);
 
-        for (int column = 0; column < GameState.PIECE_COUNT_TO_WIN; column++) {
+        for (int column = 0; column < PIECE_COUNT_TO_WIN; column++) {
             board.placePiece(player, column);
         }
 
@@ -73,4 +93,79 @@ public class GameStateTest {
         assertTrue(gameState.isWinner(player));
     }
 
+    @Test
+    public void checkForReverseDiagonalWin() {
+        // @formatter:off
+        String input =
+                "[[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 0, 0, 0]," +
+                "[1, 0, 0, 1, 0, 0, 0]," +
+                "[1, 1, 1, 0, 0, 0, 0]," +
+                "[2, 1, 1, 0, 0, 0, 0]," +
+                "[1, 2, 2, 1, 0, 2, 0]]";
+        // @formatter:on
+
+        Board board = Board.createFromJson(input);
+        Player player = new Player(PLAYER_ONE_VALUE);
+
+        GameState gameState = new GameState(board, player);
+
+        assertTrue(gameState.isWinner(player));
+    }
+
+    @Test
+    public void checkForReverseDiagonalInCenter() {
+        // @formatter:off
+        String input =
+                "[[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 1, 0, 0]," +
+                "[1, 0, 0, 1, 0, 0, 0]," +
+                "[1, 1, 1, 0, 0, 0, 0]," +
+                "[2, 1, 1, 0, 0, 0, 0]," +
+                "[0, 2, 2, 1, 0, 2, 0]]";
+        // @formatter:on
+        Board board = Board.createFromJson(input);
+        Player player = new Player(PLAYER_ONE_VALUE);
+
+        GameState gameState = new GameState(board, player);
+
+        assertTrue(gameState.isWinner(player));
+    }
+
+    @Test
+    public void checkForReverseDiagonalPlayerTwoWin() {
+        // @formatter:off
+        String input =
+                "[[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 1, 0, 0]," +
+                "[1, 0, 0, 1, 0, 0, 2]," +
+                "[1, 1, 0, 0, 0, 2, 0]," +
+                "[2, 1, 1, 0, 2, 0, 0]," +
+                "[0, 2, 2, 2, 0, 2, 0]]";
+        // @formatter:on
+        Board board = Board.createFromJson(input);
+        Player player = new Player("player-two");
+
+        GameState gameState = new GameState(board, player);
+
+        assertTrue(gameState.isWinner(player));
+    }
+
+
+    /**
+     *
+     //  diagonal
+
+     board.placePiece(player, 0);
+     board.placePiece(opponent, 0);
+     board.placePiece(player, 0);
+     board.placePiece(opponent, 1);
+     board.placePiece(player, 0);
+     board.placePiece(opponent, 1);
+     board.placePiece(player, 1);
+     board.placePiece(opponent, 2);
+     board.placePiece(player, 2);
+     board.placePiece(opponent, 5);
+     board.placePiece(player, 3);
+     */
 }

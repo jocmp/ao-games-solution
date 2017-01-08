@@ -8,17 +8,18 @@ subprojects {
 
     dependencies {
         testCompile "junit:junit:4.12"
+        compile 'com.google.code.gson:gson:2.8.0'
     }
 }
 
 // Task to run build.gradle
 // and deploy to game directory
 task deploySolution(type: GradleBuild) {
-    tasks = ['build', 'copyGame', 'makeGameRunnable']
+    tasks = ['build', 'makeGameRunnable', 'copyGame']
 }
 
 task makeGameRunnable(type: Exec) {
-    commandLine 'chmod', 'u+x', '../connect-four/solution.jar'
+    commandLine 'chmod', 'u+x', 'solution/build/libs/solution.jar'
 }
 
 task copyGame(type: Copy) {

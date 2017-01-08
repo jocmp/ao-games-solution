@@ -6,7 +6,8 @@ import org.junit.Test;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
 import static java.util.Arrays.deepToString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class BoardTest {
 
@@ -84,16 +85,6 @@ public class BoardTest {
 
     @Test
     public void checkMatchingToString() {
-        String inputJson = createFullBoard();
-        Board board = Board.createFromJson(inputJson);
-
-        String boardJson = board.toString();
-
-        assertEquals(inputJson, boardJson);
-    }
-
-    @Test
-    public void checkMatchingDuplicate() {
         String inputJson = createFullBoard();
         Board board = Board.createFromJson(inputJson);
 

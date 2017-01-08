@@ -4,10 +4,10 @@ jar {
     manifest {
         attributes('Main-Class': main)
     }
+    // Zip up external dependencies
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 }
-
-dependencies {
-    testCompile 'junit:junit:4.12'
-    compile 'com.google.code.gson:gson:2.8.0'
-}
-
