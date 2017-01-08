@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_WIN;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
+import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_VALUE;
+import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_TWO_VALUE;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -11,8 +13,6 @@ import static org.junit.Assert.assertTrue;
  * {@link GameState} class.
  */
 public class WinningStateTest {
-
-    private static final String PLAYER_ONE_VALUE = "player-one";
 
     @Test
     public void verticalWin() {
@@ -126,7 +126,7 @@ public class WinningStateTest {
     }
 
     private void checkPlayerTwoWin(String jsonInput) {
-        checkPlayerInput("player-two", jsonInput);
+        checkPlayerInput(PLAYER_TWO_VALUE, jsonInput);
     }
 
     private void checkPlayerInput(String playerValue, String jsonInput) {

@@ -11,6 +11,12 @@ four main components:
     its own piece number, 1 or 2.
 
 
+## Getting started
+To run the project, `git clone https://github.com/josiahcambell/ao-games-solution.git`
+
+To build and deploy, run `./gradlew deploySolution`, or `gradle deploySolution` if you have the
+Gradle daemon installed. Deploying the solution will also run the unit tests.
+
 ## Comments
 
 >What purpose does this comment serve? It’s certainly not more informative than the

@@ -6,12 +6,12 @@ import org.junit.Test;
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.createFromJson;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
+import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_VALUE;
 import static org.junit.Assert.*;
 
 
 public class GameStateTest {
 
-    private static final String PLAYER_ONE_VALUE = "player-one";
 
     @Test
     public void createValidGameState() throws Exception {

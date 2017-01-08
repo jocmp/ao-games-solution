@@ -1,16 +1,23 @@
 package edu.gvsu.cis.campbjos.connectfour.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.lang.String.format;
+import static java.util.Collections.max;
+import static java.util.Map.Entry.comparingByKey;
 
 public class Player {
 
-    private static final String PLAYER_ONE_VALUE = "player-one";
-    private static final String PLAYER_TWO_VALUE = "player-two";
+    static final String PLAYER_ONE_VALUE = "player-one";
+    static final String PLAYER_TWO_VALUE = "player-two";
 
-    public static final int PLAYER_ONE_PIECE = 1;
-    public static final int PLAYER_TWO_PIECE = 2;
+    static final int PLAYER_ONE_PIECE = 1;
+    static final int PLAYER_TWO_PIECE = 2;
 
     private final int piece;
+
+    private int bestPossibleMove;
 
     Player(String playerValue) throws IllegalArgumentException {
         switch (playerValue) {
@@ -34,15 +41,57 @@ public class Player {
         return new Player(PLAYER_ONE_VALUE);
     }
 
-    int runMinimax(final GameState game, final int depth, int minScore, int maxScore) {
-        return 0;
+    int runMinimax(final GameState game, final int depth,
+                   final int lowerBound, final int upperBound) {
+        if (game.isOver() || depth == 0) {
+            return getScore(game);
+        }
+        int nextDepth = depth - 1;
+
+        Map<Integer, Integer> possibleMoves = new HashMap<>();
+        int currentMin = lowerBound;
+        int currentMax = upperBound;
+        for (int move : game.getAvailableMoves()) {
+            int score = runMinimax(game.getChildState(move), nextDepth, currentMin, currentMax);
+            if (game.getCurrentPlayer().getPiece() == piece) {
+                possibleMoves.put(score, move);
+                if (score > currentMin) {
+                    currentMin = score;
+                }
+            } else {
+                if (score < currentMax) {
+                    currentMax = score;
+                }
+            }
+            boolean isDiverged = currentMax < currentMin;
+            if (isDiverged) {
+                break;
+            }
+        }
+        boolean isMinimizing = game.getCurrentPlayer().getPiece() != piece;
+        if (isMinimizing) {
+            return currentMax;
+        }
+        bestPossibleMove = max(possibleMoves.entrySet(), comparingByKey()).getValue();
+        return currentMin;
     }
 
-    private int getScore(final GameState game, final int depth) {
+    int getBestPossibleMove() {
+        return bestPossibleMove;
+    }
+
+    private int getScore(final GameState game) {
         if (game.isOver()) {
-            return game.getWinner() * 10;
+            int winner = game.getWinner();
+            if (winner == 1) {
+                return Integer.MAX_VALUE;
+            }
+            if (winner == 2) {
+                return Integer.MIN_VALUE;
+            }
+            return 0;
         }
-        return 0;
+        return game.getAvailableMoves().size() - 1;
     }
 
     int getPiece() {

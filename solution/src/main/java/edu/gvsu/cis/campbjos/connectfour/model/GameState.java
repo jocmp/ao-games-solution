@@ -14,12 +14,13 @@ public class GameState {
 
     static final int PIECE_COUNT_TO_WIN = 4;
     private static final int DRAW = 3;
-    private static final int STATIC_DEPTH = 5;
+    private static final int STATIC_DEPTH = 6;
 
     private final Board board;
     private final Player currentPlayer;
     private final Player opponent;
     private final int winner;
+    private Set<Integer> availableMoves;
 
     GameState(Board board, Player currentPlayer) {
         this.board = board;
@@ -28,22 +29,12 @@ public class GameState {
         this.winner = checkForWinner();
     }
 
-    /**
-     *
-     * @param serializedBoard
-     * @param playerValue
-     * @return
-     */
     public static GameState createFromJson(final String serializedBoard, final String playerValue) {
         return new GameState(
                 Board.createFromJson(serializedBoard),
                 new Player(playerValue));
     }
 
-    /**
-     * @return Integer representation of players.
-     * "3" represents a draw
-     */
     private int checkForWinner() {
         List<Integer> wins = new ArrayList<>(4);
 
@@ -93,10 +84,18 @@ public class GameState {
         return getAvailableMoves().isEmpty();
     }
 
-
+    public int getWinner() {
+        return winner;
+    }
 
     public int getMove() {
-        return currentPlayer.runMinimax(this, STATIC_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        currentPlayer.runMinimax(this, STATIC_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+        int bestMove = currentPlayer.getBestPossibleMove();
+        if (!getAvailableMoves().contains(bestMove)) {
+            return new ArrayList<>(getAvailableMoves()).get(0);
+        }
+        return bestMove;
     }
 
     /**
@@ -105,7 +104,10 @@ public class GameState {
      * @return a list of available spaces
      */
     Set<Integer> getAvailableMoves() {
-        Set<Integer> availableMoves = new HashSet<>();
+        if (availableMoves != null) {
+            return availableMoves;
+        }
+        availableMoves = new HashSet<>();
         for (int row = ROW_SIZE - 1; row >= 0; row--) {
             for (int column = 0; column < COLUMN_SIZE; column++) {
                 if (board.isOpenSpace(row, column)) {
@@ -116,7 +118,7 @@ public class GameState {
         return availableMoves;
     }
 
-    GameState makeMove(int column) {
+    GameState getChildState(int column) {
         Board nextBoard = board.duplicate();
         nextBoard.placePiece(currentPlayer, column);
         return new GameState(nextBoard, opponent);
@@ -158,7 +160,6 @@ public class GameState {
                 }
             }
         }
-
         return 0;
     }
 
