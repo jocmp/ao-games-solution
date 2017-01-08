@@ -29,6 +29,18 @@ public class GameState {
     }
 
     /**
+     *
+     * @param serializedBoard
+     * @param playerValue
+     * @return
+     */
+    public static GameState createFromJson(final String serializedBoard, final String playerValue) {
+        return new GameState(
+                Board.createFromJson(serializedBoard),
+                new Player(playerValue));
+    }
+
+    /**
      * @return Integer representation of players.
      * "3" represents a draw
      */
@@ -68,30 +80,23 @@ public class GameState {
         return 0;
     }
 
-    public static GameState createFromJson(final String serializedBoard, final String playerValue) {
-        return new GameState(
-                Board.createFromJson(serializedBoard),
-                new Player(playerValue));
-    }
-
     boolean isWinner(Player player) {
         return winner == player.getPiece();
-    }
-
-    boolean isLoser(Player player) {
-        return winner > 0 && !isWinner(player);
     }
 
     boolean isOver() {
         return winner > 0;
     }
 
-    public int getMove() {
-        return currentPlayer.runMinimax(this, STATIC_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
 
     private boolean isBoardFull() {
         return getAvailableMoves().isEmpty();
+    }
+
+
+
+    public int getMove() {
+        return currentPlayer.runMinimax(this, STATIC_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     /**

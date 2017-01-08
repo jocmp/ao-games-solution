@@ -6,6 +6,10 @@ import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_W
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Tests winning states for players one and two based on the
+ * {@link GameState} class.
+ */
 public class WinningStateTest {
 
     private static final String PLAYER_ONE_VALUE = "player-one";

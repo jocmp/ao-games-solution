@@ -38,7 +38,10 @@ public class Player {
         return 0;
     }
 
-    private int getScore(final GameState gameState, final int depth) {
+    private int getScore(final GameState game, final int depth) {
+        if (game.isOver()) {
+            return game.getWinner() * 10;
+        }
         return 0;
     }
 

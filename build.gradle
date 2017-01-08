@@ -12,14 +12,14 @@ subprojects {
     }
 }
 
-// Task to run build.gradle
-// and deploy to game directory
+// Task to run `build.gradle` and deploy to game directory
 task deploySolution(type: GradleBuild) {
     tasks = ['build', 'makeGameRunnable', 'copyGame']
 }
 
 task makeGameRunnable(type: Exec) {
     commandLine 'chmod', 'u+x', 'solution/build/libs/solution.jar'
+    commandLine 'mkdir', '-p', '../connect-four/'
 }
 
 task copyGame(type: Copy) {
