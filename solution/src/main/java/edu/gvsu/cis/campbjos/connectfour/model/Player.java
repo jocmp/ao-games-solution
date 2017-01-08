@@ -1,15 +1,14 @@
 package edu.gvsu.cis.campbjos.connectfour.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Collections.max;
-import static java.util.Map.Entry.comparingByKey;
 
 class Player {
 
-    static final int STATIC_DEPTH = 8;
+    private static final int STATIC_DEPTH = 5;
 
     static final String PLAYER_ONE_VALUE = "player-one";
     static final String PLAYER_TWO_VALUE = "player-two";
@@ -48,34 +47,38 @@ class Player {
         if (game.isOver() || depth == STATIC_DEPTH) {
             return getScore(game, depth);
         }
-        int nextDepth = depth + 1;
 
-        Map<Integer, Integer> possibleMoves = new HashMap<>();
-        int currentMin = lowerBound;
-        int currentMax = upperBound;
-        for (int move : game.getAvailableMoves()) {
-            int score = runMinimax(game.getChildState(move), nextDepth, currentMin, currentMax);
-            if (game.getCurrentPlayer().getPiece() == piece) {
-                possibleMoves.put(score, move);
-                if (score > currentMin) {
-                    currentMin = score;
+        int nextDepth = depth + 1;
+        boolean isMaximizing = game.getCurrentPlayer().getPiece() == piece;
+        List<Result> possibleResults = new ArrayList<>();
+
+        if (isMaximizing) {
+            int alpha = lowerBound;
+            for (int move : game.getAvailableMoves()) {
+                int score = runMinimax(game.getChildState(move), nextDepth, alpha, upperBound);
+                possibleResults.add(new Result(score, move));
+                if (score > alpha) {
+                    alpha = score;
                 }
-            } else {
-                if (score < currentMax) {
-                    currentMax = score;
+                if (alpha > upperBound) {
+                    return upperBound;
                 }
             }
-            boolean isConverged = currentMax <= currentMin;
-            if (isConverged) {
-                break;
+            bestPossibleMove = max(possibleResults, (lhs, rhs) -> lhs.score - rhs.score).move;
+            return alpha;
+        } else {
+            int beta = upperBound;
+            for (int move : game.getAvailableMoves()) {
+                int score = runMinimax(game.getChildState(move), nextDepth, lowerBound, beta);
+                if (score < beta) {
+                    beta = score; // minimum upper bound
+                }
+                if (beta < lowerBound) {
+                    return lowerBound;
+                }
             }
+            return beta;
         }
-        boolean isMinimizing = game.getCurrentPlayer().getPiece() != piece;
-        if (isMinimizing) {
-            return currentMax;
-        }
-        bestPossibleMove = max(possibleMoves.entrySet(), comparingByKey()).getValue();
-        return currentMin;
     }
 
     int getBestPossibleMove() {
@@ -83,16 +86,18 @@ class Player {
     }
 
     private int getScore(final GameState game, int depth) {
+        int score = game.maximumPieceCount;
         if (game.isOver()) {
             int winner = game.getWinner();
             if (winner == piece) {
-                return 10 - depth;
-            }
-            if (winner != GameState.DRAW) {
-                return depth - 10;
+                score = 10 - depth;
+            } else if (winner != GameState.DRAW) {
+                score = depth - 10;
+            } else {
+                score = 0;
             }
         }
-        return 0;
+        return score;
     }
 
     int getPiece() {

@@ -6,6 +6,7 @@ import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_W
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_VALUE;
 import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_TWO_VALUE;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -77,6 +78,25 @@ public class WinningStateTest {
                 "[1, 1, 2, 1, 0, 0, 0]]";
         // @formatter:on
         checkPlayerOneWin(input);
+    }
+
+    @Test
+    public void verticalPlayerOneWithThreePieces() {
+        // @formatter:off
+        String input =
+                "[[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 0, 0, 0]," +
+                "[0, 0, 0, 0, 0, 0, 0]," +
+                "[1, 1, 1, 0, 0, 0, 0]]";
+        // @formatter:on
+        Board board = Board.createFromJson(input);
+        Player player = new Player(PLAYER_ONE_VALUE);
+
+        GameState gameState = new GameState(board, player);
+
+        assertFalse(gameState.isWinner(player));
     }
 
     @Test

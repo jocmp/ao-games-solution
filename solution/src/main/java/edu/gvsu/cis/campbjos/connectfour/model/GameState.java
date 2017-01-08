@@ -1,14 +1,9 @@
 package edu.gvsu.cis.campbjos.connectfour.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static edu.gvsu.cis.campbjos.connectfour.model.Board.COLUMN_SIZE;
 import static edu.gvsu.cis.campbjos.connectfour.model.Board.ROW_SIZE;
-import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_PIECE;
-import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_TWO_PIECE;
 
 public class GameState {
 
@@ -19,13 +14,23 @@ public class GameState {
     private final Player currentPlayer;
     private final Player opponent;
     private final int winner;
+    final int maximumPieceCount;
+
     private Set<Integer> availableMoves;
 
     GameState(Board board, Player currentPlayer) {
         this.board = board;
         this.currentPlayer = currentPlayer;
         this.opponent = Player.nextPlayer(currentPlayer);
-        this.winner = checkForWinner();
+        Attempt attempt = checkForWinner();
+        boolean hasWinner = attempt.contiguousCount >= PIECE_COUNT_TO_WIN;
+        boolean isInconclusive = attempt.piece == 0 || attempt.piece == DRAW;
+        if (hasWinner || isInconclusive) {
+            winner = attempt.piece;
+        } else {
+            winner = 0;
+        }
+        maximumPieceCount = attempt.contiguousCount;
     }
 
     public static GameState createFromJson(final String serializedBoard, final String playerValue) {
@@ -34,40 +39,35 @@ public class GameState {
                 new Player(playerValue));
     }
 
-    private int checkForWinner() {
+    private Attempt checkForWinner() {
         List<Integer> wins = new ArrayList<>(4);
+        List<Attempt> attempts = new ArrayList<>();
 
-        boolean isPlayerOneWinner = false;
-        boolean isPlayerTwoWinner = false;
+        attempts.add(checkVerticalWin());
+        attempts.add(checkHorizontalWin());
+        attempts.add(checkForwardDiagonalWin());
+        attempts.add(checkReverseDiagonalWin());
 
-        wins.add(checkVerticalWin());
-        wins.add(checkHorizontalWin());
-        wins.add(checkForwardDiagonalWin());
-        wins.add(checkReverseDiagonalWin());
+        Optional<Attempt> winningAttempt =
+                attempts.stream()
+                        .filter(attempt -> attempt.isWin)
+                        .findFirst();
 
-        for (int win : wins) {
-            switch (win) {
-                case PLAYER_ONE_PIECE:
-                    isPlayerOneWinner = true;
-                    break;
-                case PLAYER_TWO_PIECE:
-                    isPlayerTwoWinner = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (isPlayerOneWinner) {
-            return PLAYER_ONE_PIECE;
-        }
-        if (isPlayerTwoWinner) {
-            return PLAYER_TWO_PIECE;
+        if (winningAttempt.isPresent()) {
+            return winningAttempt.get();
         }
         if (isBoardFull()) {
-            return DRAW;
+            return new Attempt(DRAW, 0);
         }
 
-        return 0;
+        Optional<Attempt> intermediateAttempt =
+                attempts.stream().filter(attempt -> attempt.piece == currentPlayer.getPiece())
+                        .findFirst();
+        if (intermediateAttempt.isPresent()) {
+            return intermediateAttempt.get();
+        } else {
+            return new Attempt(0, 0);
+        }
     }
 
     boolean isWinner(Player player) {
@@ -78,18 +78,16 @@ public class GameState {
         return winner > 0;
     }
 
-
     private boolean isBoardFull() {
         return getAvailableMoves().isEmpty();
     }
 
-    public int getWinner() {
+    int getWinner() {
         return winner;
     }
 
     public int getMove() {
         currentPlayer.runMinimax(this, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
-
         int bestMove = currentPlayer.getBestPossibleMove();
         if (!getAvailableMoves().contains(bestMove)) {
             return new ArrayList<>(getAvailableMoves()).get(0);
@@ -127,16 +125,17 @@ public class GameState {
         return currentPlayer;
     }
 
-    private int checkVerticalWin() {
+    private Attempt checkVerticalWin() {
         return checkStraightLineWin(false);
     }
 
-    private int checkHorizontalWin() {
+    private Attempt checkHorizontalWin() {
         return checkStraightLineWin(true);
     }
 
-    private int checkStraightLineWin(boolean isHorizontal) {
+    private Attempt checkStraightLineWin(boolean isHorizontal) {
         int contiguousPieces = 0;
+        int pieceCountAtMost = 0;
         int rowBound;
         int columnBound;
         if (isHorizontal) {
@@ -155,29 +154,34 @@ public class GameState {
                 } else {
                     nextPiece = board.at(row + 1, column);
                 }
-                contiguousPieces = getSumOfPieces(contiguousPieces,
+                int nextSum = getSumOfPieces(contiguousPieces,
                         currentPiece,
                         nextPiece);
+                if (currentPiece != 0) {
+                    pieceCountAtMost = updatePieceCountAtMost(pieceCountAtMost, nextSum, contiguousPieces);
+                }
+                contiguousPieces = nextSum;
 
                 if (contiguousPieces >= PIECE_COUNT_TO_WIN) {
-                    return currentPiece;
+                    return new Attempt(currentPlayer.getPiece(), contiguousPieces);
                 }
             }
         }
 
-        return 0;
+        return new Attempt(currentPlayer.getPiece(), pieceCountAtMost);
     }
 
-    private int checkForwardDiagonalWin() {
+    private Attempt checkForwardDiagonalWin() {
         return checkDiagonalWin(true);
     }
 
-    private int checkReverseDiagonalWin() {
+    private Attempt checkReverseDiagonalWin() {
         return checkDiagonalWin(false);
     }
 
-    private int checkDiagonalWin(boolean includeForwardOffset) {
+    private Attempt checkDiagonalWin(boolean includeForwardOffset) {
         int diagonalSum = ROW_SIZE + COLUMN_SIZE - 1;
+        int pieceCountAtMost = 0;
         for (int diagonalSlice = 0; diagonalSlice < diagonalSum; diagonalSlice++) {
 
             int startOffset = getDiagonalStartOffset(diagonalSlice);
@@ -207,15 +211,29 @@ public class GameState {
             for (int index = 0; index < size - 1; index++) {
                 int piece = diagonalPieces.get(index);
                 int nextPiece = diagonalPieces.get(index + 1);
-                contiguousPieces = getSumOfPieces(contiguousPieces, piece, nextPiece);
+                int nextSum = getSumOfPieces(contiguousPieces, piece, nextPiece);
+                if (piece != 0) {
+                    pieceCountAtMost = updatePieceCountAtMost(pieceCountAtMost, nextSum, contiguousPieces);
+                }
+                contiguousPieces = nextSum;
 
                 if (contiguousPieces >= PIECE_COUNT_TO_WIN) {
-                    return piece;
+                    return new Attempt(currentPlayer.getPiece(), contiguousPieces);
                 }
             }
         }
 
-        return 0;
+        return new Attempt(currentPlayer.getPiece(), pieceCountAtMost);
+    }
+
+    private int updatePieceCountAtMost(final int pieceCountAtMost, final int nextSum, final int
+            contiguousPieces) {
+        if (nextSum == 0 && contiguousPieces > 0) {
+            if (contiguousPieces > pieceCountAtMost) {
+                return contiguousPieces;
+            }
+        }
+        return pieceCountAtMost;
     }
 
     private int getDiagonalStartOffset(int diagonalSlice) {
