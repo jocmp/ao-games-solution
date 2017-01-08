@@ -13,8 +13,7 @@ import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_TWO_PIECE;
 public class GameState {
 
     static final int PIECE_COUNT_TO_WIN = 4;
-    private static final int DRAW = 3;
-    private static final int STATIC_DEPTH = 6;
+    static final int DRAW = 3;
 
     private final Board board;
     private final Player currentPlayer;
@@ -89,7 +88,7 @@ public class GameState {
     }
 
     public int getMove() {
-        currentPlayer.runMinimax(this, STATIC_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        currentPlayer.runMinimax(this, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
         int bestMove = currentPlayer.getBestPossibleMove();
         if (!getAvailableMoves().contains(bestMove)) {
@@ -129,28 +128,33 @@ public class GameState {
     }
 
     private int checkVerticalWin() {
-        int contiguousPieces = 0;
-        for (int row = 0; row < ROW_SIZE - 1; row++) {
-            for (int column = 0; column < COLUMN_SIZE; column++) {
-                int currentPiece = board.at(row, column);
-                int nextPiece = board.at(row + 1, column);
-
-                contiguousPieces = getSumOfPieces(contiguousPieces, currentPiece, nextPiece);
-
-                if (contiguousPieces >= PIECE_COUNT_TO_WIN) {
-                    return currentPiece;
-                }
-            }
-        }
-        return 0;
+        return checkStraightLineWin(false);
     }
 
     private int checkHorizontalWin() {
+        return checkStraightLineWin(true);
+    }
+
+    private int checkStraightLineWin(boolean isHorizontal) {
         int contiguousPieces = 0;
-        for (int row = 0; row < ROW_SIZE; row++) {
-            for (int column = 0; column < COLUMN_SIZE - 1; column++) {
+        int rowBound;
+        int columnBound;
+        if (isHorizontal) {
+            rowBound = ROW_SIZE;
+            columnBound = COLUMN_SIZE - 1;
+        } else {
+            rowBound = ROW_SIZE - 1;
+            columnBound = COLUMN_SIZE;
+        }
+        for (int row = 0; row < rowBound; row++) {
+            for (int column = 0; column < columnBound; column++) {
                 int currentPiece = board.at(row, column);
-                int nextPiece = board.at(row, column + 1);
+                int nextPiece;
+                if (isHorizontal) {
+                    nextPiece = board.at(row, column + 1);
+                } else {
+                    nextPiece = board.at(row + 1, column);
+                }
                 contiguousPieces = getSumOfPieces(contiguousPieces,
                         currentPiece,
                         nextPiece);
@@ -160,6 +164,7 @@ public class GameState {
                 }
             }
         }
+
         return 0;
     }
 
@@ -172,7 +177,6 @@ public class GameState {
     }
 
     private int checkDiagonalWin(boolean includeForwardOffset) {
-        // At most, there are 13 diagonals to iterate over
         int diagonalSum = ROW_SIZE + COLUMN_SIZE - 1;
         for (int diagonalSlice = 0; diagonalSlice < diagonalSum; diagonalSlice++) {
 

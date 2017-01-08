@@ -7,7 +7,9 @@ import static java.lang.String.format;
 import static java.util.Collections.max;
 import static java.util.Map.Entry.comparingByKey;
 
-public class Player {
+class Player {
+
+    static final int STATIC_DEPTH = 8;
 
     static final String PLAYER_ONE_VALUE = "player-one";
     static final String PLAYER_TWO_VALUE = "player-two";
@@ -43,10 +45,10 @@ public class Player {
 
     int runMinimax(final GameState game, final int depth,
                    final int lowerBound, final int upperBound) {
-        if (game.isOver() || depth == 0) {
-            return getScore(game);
+        if (game.isOver() || depth == STATIC_DEPTH) {
+            return getScore(game, depth);
         }
-        int nextDepth = depth - 1;
+        int nextDepth = depth + 1;
 
         Map<Integer, Integer> possibleMoves = new HashMap<>();
         int currentMin = lowerBound;
@@ -63,8 +65,8 @@ public class Player {
                     currentMax = score;
                 }
             }
-            boolean isDiverged = currentMax < currentMin;
-            if (isDiverged) {
+            boolean isConverged = currentMax <= currentMin;
+            if (isConverged) {
                 break;
             }
         }
@@ -80,18 +82,17 @@ public class Player {
         return bestPossibleMove;
     }
 
-    private int getScore(final GameState game) {
+    private int getScore(final GameState game, int depth) {
         if (game.isOver()) {
             int winner = game.getWinner();
-            if (winner == 1) {
-                return Integer.MAX_VALUE;
+            if (winner == piece) {
+                return 10 - depth;
             }
-            if (winner == 2) {
-                return Integer.MIN_VALUE;
+            if (winner != GameState.DRAW) {
+                return depth - 10;
             }
-            return 0;
         }
-        return game.getAvailableMoves().size() - 1;
+        return 0;
     }
 
     int getPiece() {
