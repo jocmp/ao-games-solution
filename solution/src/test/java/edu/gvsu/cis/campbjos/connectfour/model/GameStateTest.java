@@ -2,7 +2,7 @@ package edu.gvsu.cis.campbjos.connectfour.model;
 
 import org.junit.Test;
 
-import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_WIN;
+
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.createFromJson;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
@@ -64,108 +64,4 @@ public class GameStateTest {
 
         assertFalse(gameSate.getAvailableMoves().contains(columnOne));
     }
-
-    @Test
-    public void checkForVerticalWin() {
-        Board board = Board.createFromJson(createEmptyGrid());
-        Player player = new Player(PLAYER_ONE_VALUE);
-
-        for (int i = 0; i < PIECE_COUNT_TO_WIN; i++) {
-            board.placePiece(player, 0);
-        }
-
-        GameState gameState = new GameState(board, player);
-
-        assertTrue(gameState.isWinner(player));
-    }
-
-    @Test
-    public void checkForHorizontalWin() {
-        Board board = Board.createFromJson(createEmptyGrid());
-        Player player = new Player(PLAYER_ONE_VALUE);
-
-        for (int column = 0; column < PIECE_COUNT_TO_WIN; column++) {
-            board.placePiece(player, column);
-        }
-
-        GameState gameState = new GameState(board, player);
-
-        assertTrue(gameState.isWinner(player));
-    }
-
-    @Test
-    public void checkForReverseDiagonalWin() {
-        // @formatter:off
-        String input =
-                "[[0, 0, 0, 0, 0, 0, 0]," +
-                "[0, 0, 0, 0, 0, 0, 0]," +
-                "[1, 0, 0, 1, 0, 0, 0]," +
-                "[1, 1, 1, 0, 0, 0, 0]," +
-                "[2, 1, 1, 0, 0, 0, 0]," +
-                "[1, 2, 2, 1, 0, 2, 0]]";
-        // @formatter:on
-
-        Board board = Board.createFromJson(input);
-        Player player = new Player(PLAYER_ONE_VALUE);
-
-        GameState gameState = new GameState(board, player);
-
-        assertTrue(gameState.isWinner(player));
-    }
-
-    @Test
-    public void checkForReverseDiagonalInCenter() {
-        // @formatter:off
-        String input =
-                "[[0, 0, 0, 0, 0, 0, 0]," +
-                "[0, 0, 0, 0, 1, 0, 0]," +
-                "[1, 0, 0, 1, 0, 0, 0]," +
-                "[1, 1, 1, 0, 0, 0, 0]," +
-                "[2, 1, 1, 0, 0, 0, 0]," +
-                "[0, 2, 2, 1, 0, 2, 0]]";
-        // @formatter:on
-        Board board = Board.createFromJson(input);
-        Player player = new Player(PLAYER_ONE_VALUE);
-
-        GameState gameState = new GameState(board, player);
-
-        assertTrue(gameState.isWinner(player));
-    }
-
-    @Test
-    public void checkForReverseDiagonalPlayerTwoWin() {
-        // @formatter:off
-        String input =
-                "[[0, 0, 0, 0, 0, 0, 0]," +
-                "[0, 0, 0, 0, 1, 0, 0]," +
-                "[1, 0, 0, 1, 0, 0, 2]," +
-                "[1, 1, 0, 0, 0, 2, 0]," +
-                "[2, 1, 1, 0, 2, 0, 0]," +
-                "[0, 2, 2, 2, 0, 2, 0]]";
-        // @formatter:on
-        Board board = Board.createFromJson(input);
-        Player player = new Player("player-two");
-
-        GameState gameState = new GameState(board, player);
-
-        assertTrue(gameState.isWinner(player));
-    }
-
-
-    /**
-     *
-     //  diagonal
-
-     board.placePiece(player, 0);
-     board.placePiece(opponent, 0);
-     board.placePiece(player, 0);
-     board.placePiece(opponent, 1);
-     board.placePiece(player, 0);
-     board.placePiece(opponent, 1);
-     board.placePiece(player, 1);
-     board.placePiece(opponent, 2);
-     board.placePiece(player, 2);
-     board.placePiece(opponent, 5);
-     board.placePiece(player, 3);
-     */
 }

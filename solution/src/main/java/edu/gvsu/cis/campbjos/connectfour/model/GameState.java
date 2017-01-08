@@ -40,7 +40,8 @@ public class GameState {
 
         wins.add(checkVerticalWin());
         wins.add(checkHorizontalWin());
-        wins.add(checkReverseDiagonal());
+        wins.add(checkForwardDiagonalWin());
+        wins.add(checkReverseDiagonalWin());
 
         for (int win : wins) {
             switch (win) {
@@ -156,29 +157,36 @@ public class GameState {
         return 0;
     }
 
-    private int checkReverseDiagonal() {
-        // At most, there are 13 diagonals
+    private int checkForwardDiagonalWin() {
+        return checkDiagonalWin(true);
+    }
+
+    private int checkReverseDiagonalWin() {
+        return checkDiagonalWin(false);
+    }
+
+    private int checkDiagonalWin(boolean includeForwardOffset) {
+        // At most, there are 13 diagonals to iterate over
         int diagonalSum = ROW_SIZE + COLUMN_SIZE - 1;
         for (int diagonalSlice = 0; diagonalSlice < diagonalSum; diagonalSlice++) {
 
-            int startOffset = diagonalSlice - ROW_SIZE + 1;
-            int endOffset = diagonalSlice - COLUMN_SIZE + 1;
+            int startOffset = getDiagonalStartOffset(diagonalSlice);
+            int endOffset = getDiagonalEndOffset(diagonalSlice);
 
-            if (diagonalSlice < ROW_SIZE) {
-                startOffset = 0;
-            }
-            if (diagonalSlice < COLUMN_SIZE) {
-                endOffset = 0;
-            }
-
-            int accessIndex = diagonalSlice - startOffset;
+            int accessRow = diagonalSlice - startOffset;
 
             List<Integer> diagonalPieces = new ArrayList<>();
-            while (accessIndex >= endOffset) {
-                int row = accessIndex;
-                int column = diagonalSlice - accessIndex;
+            while (accessRow >= endOffset) {
+                int row;
+                if (includeForwardOffset) {
+                    row = ROW_SIZE - accessRow - 1;
+                } else {
+                    row = accessRow;
+                }
+
+                int column = diagonalSlice - accessRow;
                 diagonalPieces.add(board.at(row, column));
-                accessIndex--;
+                accessRow--;
             }
             int size = diagonalPieces.size();
 
@@ -198,6 +206,20 @@ public class GameState {
         }
 
         return 0;
+    }
+
+    private int getDiagonalStartOffset(int diagonalSlice) {
+        if (diagonalSlice < ROW_SIZE) {
+            return 0;
+        }
+        return diagonalSlice - ROW_SIZE + 1;
+    }
+
+    private int getDiagonalEndOffset(int diagonalSlice) {
+        if (diagonalSlice < COLUMN_SIZE) {
+            return 0;
+        }
+        return diagonalSlice - COLUMN_SIZE + 1;
     }
 
     private int getSumOfPieces(final int runningTotal,

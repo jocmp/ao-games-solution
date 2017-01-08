@@ -15,13 +15,11 @@ public class ConnectFourAI {
     private static final String TIMEOUT_FLAG = "-t";
 
     private final GameState gameState;
+    private final long timeout;
 
     private ConnectFourAI(String board, String player, int timeout) {
+        this.timeout = (long) timeout;
         gameState = GameState.createFromJson(board, player);
-    }
-
-    private int getMove() {
-        return gameState.getMove();
     }
 
     public static void main(String[] args) {
@@ -30,7 +28,8 @@ public class ConnectFourAI {
             return;
         }
         final ConnectFourAI connectFourAI = parseConnectFourState(args);
-        System.exit(connectFourAI.getMove());
+
+        System.exit(connectFourAI.gameState.getMove());
     }
 
     private static ConnectFourAI parseConnectFourState(final String[] args) {
