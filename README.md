@@ -4,7 +4,7 @@ Thanks for looking at my source code! I've divided my solution into
 four main components:
 * [ConnectFourAI] - handling CLI parsing, main and exit code
 * [Board] - model which contains the grid passed in via the command-line
-* [GameState] - The game at a point in time as specified by the JSON-formatted board provided at runtime. A GameState be sent back to the minimax algorithm to determine if a win has occurred.
+* [GameState] - The game at a point in time as specified by the JSON-formatted board provided at runtime. A GameState is sent back to the minimax algorithm to determine if a win has occurred.
 * [Player] - model which may represent either `player-one` or `player-two`.
     * Player can run the minimax algorithm in an attempt to find the best move at a static depth.
     * A player can know the "next player" (`nextPlayer`) by identifying
