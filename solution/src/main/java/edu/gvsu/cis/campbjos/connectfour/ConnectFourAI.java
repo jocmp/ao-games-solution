@@ -24,7 +24,7 @@ public class ConnectFourAI implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        if (args.length < 3) {
+        if (args.length < 6) {
             System.out.println("Not enough arguments!");
             return;
         }

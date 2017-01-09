@@ -72,7 +72,7 @@ class Player {
             for (int move : game.getAvailableMoves()) {
                 int score = runMinimax(game.getChildState(move), nextDepth, lowerBound, beta);
                 if (score < beta) {
-                    beta = score; // minimum upper bound
+                    beta = score;
                 }
                 if (beta < lowerBound) {
                     return lowerBound;
