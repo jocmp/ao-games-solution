@@ -73,7 +73,6 @@ public class ConnectFourAI implements Callable<Integer> {
                     break;
             }
         }
-
         return new ConnectFourAI(boardArg, playerArg, timeout);
     }
 
