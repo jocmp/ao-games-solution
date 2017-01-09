@@ -45,7 +45,7 @@ class Player {
     int runMinimax(final GameState game, final int depth,
                    final int lowerBound, final int upperBound) {
         if (game.isOver() || depth == STATIC_DEPTH) {
-            return getScore(game, depth);
+            return getScore(game, depth, getPiece());
         }
 
         int nextDepth = depth + 1;
@@ -85,7 +85,7 @@ class Player {
         return bestPossibleMove;
     }
 
-    private int getScore(final GameState game, int depth) {
+    private static int getScore(final GameState game, int depth, int piece) {
         int score = game.getMaximumPieceCount();
         if (game.isOver()) {
             int winner = game.getWinner();
