@@ -3,6 +3,8 @@ package edu.gvsu.cis.campbjos.connectfour.model;
 import org.junit.Test;
 
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_WIN;
+import static edu.gvsu.cis.campbjos.connectfour.model.GameStateFactory.createGameStatePlayerOne;
+import static edu.gvsu.cis.campbjos.connectfour.model.GameStateFactory.createGameStatePlayerTwo;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_VALUE;
 import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_TWO_VALUE;
@@ -142,19 +144,14 @@ public class WinningStateTest {
     }
 
     private void checkPlayerOneWin(String jsonInput) {
-        checkPlayerInput(PLAYER_ONE_VALUE, jsonInput);
+        GameState gameState = createGameStatePlayerOne(jsonInput);
+
+        assertTrue(gameState.isWinner(new Player(PLAYER_ONE_VALUE)));
     }
 
     private void checkPlayerTwoWin(String jsonInput) {
-        checkPlayerInput(PLAYER_TWO_VALUE, jsonInput);
-    }
+        GameState gameState = createGameStatePlayerTwo(jsonInput);
 
-    private void checkPlayerInput(String playerValue, String jsonInput) {
-        Board board = Board.createFromJson(jsonInput);
-        Player player = new Player(playerValue);
-
-        GameState gameState = new GameState(board, player);
-
-        assertTrue(gameState.isWinner(player));
+        assertTrue(gameState.isWinner(new Player(PLAYER_TWO_VALUE)));
     }
 }

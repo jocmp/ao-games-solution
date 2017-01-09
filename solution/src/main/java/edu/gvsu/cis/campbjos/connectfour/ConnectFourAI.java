@@ -29,7 +29,7 @@ public class ConnectFourAI {
         }
         final ConnectFourAI connectFourAI = parseConnectFourState(args);
 
-        System.exit(connectFourAI.gameState.getMove());
+        System.exit(connectFourAI.gameState.makeMove());
     }
 
     private static ConnectFourAI parseConnectFourState(final String[] args) {

@@ -3,6 +3,7 @@ package edu.gvsu.cis.campbjos.connectfour.model;
 import org.junit.Test;
 
 
+import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_WIN;
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.createFromJson;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
@@ -11,7 +12,6 @@ import static org.junit.Assert.*;
 
 
 public class GameStateTest {
-
 
     @Test
     public void createValidGameState() throws Exception {
@@ -63,5 +63,21 @@ public class GameStateTest {
         GameState gameSate = new GameState(board, player);
 
         assertFalse(gameSate.getAvailableMoves().contains(columnOne));
+    }
+
+    @Test
+    public void checkWinnerIsPlayerTwo() {
+        Board board = Board.createFromJson(createEmptyGrid());
+        Player playerOne = new Player(PLAYER_ONE_VALUE);
+        Player playerTwo = Player.nextPlayer(playerOne);
+
+        board.placePiece(playerOne, 0);
+        for (int i = 0; i < PIECE_COUNT_TO_WIN; i++) {
+            board.placePiece(playerTwo, 0);
+        }
+
+        GameState game = new GameState(board, playerOne);
+
+        assertTrue(game.isWinner(playerTwo));
     }
 }

@@ -8,7 +8,7 @@ import static java.util.Collections.max;
 
 class Player {
 
-    private static final int STATIC_DEPTH = 5;
+    private static final int STATIC_DEPTH = 6;
 
     static final String PLAYER_ONE_VALUE = "player-one";
     static final String PLAYER_TWO_VALUE = "player-two";
@@ -86,7 +86,7 @@ class Player {
     }
 
     private int getScore(final GameState game, int depth) {
-        int score = game.maximumPieceCount;
+        int score = game.getMaximumPieceCount();
         if (game.isOver()) {
             int winner = game.getWinner();
             if (winner == piece) {
