@@ -4,12 +4,6 @@ import edu.gvsu.cis.campbjos.connectfour.model.GameState;
 
 import java.util.concurrent.*;
 
-/**
- * Format:
- * <code>
- * your-ai.sh -b "...board json..." -p "player-one" -t "7000"
- * </code>
- */
 public class ConnectFourAI implements Callable<Integer> {
 
     private static final String BOARD_FLAG = "-b";

@@ -102,9 +102,6 @@ public class GameState {
         return bestAttempt;
     }
 
-    /**
-     * Iterate from the bottom to the top
-     */
     Set<Integer> getAvailableMoves() {
         if (availableMoves != null) {
             return availableMoves;
@@ -161,11 +158,10 @@ public class GameState {
                 } else {
                     nextPiece = board.at(row + 1, column);
                 }
-                int nextSum = getSumOfPieces(contiguousPieces,
-                        currentPiece,
-                        nextPiece);
+                int nextSum = getSumOfPieces(contiguousPieces, currentPiece, nextPiece);
                 if (currentPiece == currentPlayer.getPiece()) {
-                    pieceCountAtMost = updatePieceCountAtMost(pieceCountAtMost, nextSum, contiguousPieces);
+                    pieceCountAtMost =
+                            updateBestAttempt(pieceCountAtMost, nextSum, contiguousPieces);
                 }
                 contiguousPieces = nextSum;
 
@@ -174,7 +170,6 @@ public class GameState {
                 }
             }
         }
-
         return 0;
     }
 
@@ -187,9 +182,9 @@ public class GameState {
     }
 
     private int checkDiagonalWin(boolean includeForwardOffset) {
-        int diagonalSum = ROW_SIZE + COLUMN_SIZE - 1;
-        int pieceCountAtMost = 0;
-        for (int diagonalSlice = 0; diagonalSlice < diagonalSum; diagonalSlice++) {
+        int diagonalLimit = ROW_SIZE + COLUMN_SIZE - 1;
+        int piecesAtMost = 0;
+        for (int diagonalSlice = 0; diagonalSlice < diagonalLimit; diagonalSlice++) {
 
             int startOffset = getDiagonalStartOffset(diagonalSlice);
             int endOffset = getDiagonalEndOffset(diagonalSlice);
@@ -204,7 +199,6 @@ public class GameState {
                 } else {
                     row = accessRow;
                 }
-
                 int column = diagonalSlice - accessRow;
                 diagonalPieces.add(board.at(row, column));
                 accessRow--;
@@ -218,23 +212,22 @@ public class GameState {
             for (int index = 0; index < size - 1; index++) {
                 int piece = diagonalPieces.get(index);
                 int nextPiece = diagonalPieces.get(index + 1);
-                int nextSum = getSumOfPieces(contiguousPieces, piece, nextPiece);
+                int nextPieceSum = getSumOfPieces(contiguousPieces, piece, nextPiece);
                 if (piece == currentPlayer.getPiece()) {
-                    pieceCountAtMost = updatePieceCountAtMost(pieceCountAtMost, nextSum, contiguousPieces);
+                    piecesAtMost = updateBestAttempt(piecesAtMost, nextPieceSum, contiguousPieces);
                 }
-                contiguousPieces = nextSum;
+                contiguousPieces = nextPieceSum;
 
                 if (contiguousPieces >= PIECE_COUNT_TO_WIN) {
                     return piece;
                 }
             }
         }
-
         return 0;
     }
 
-    private int updatePieceCountAtMost(final int pieceCountAtMost, final int nextSum, final int
-            contiguousPieces) {
+    private int updateBestAttempt(final int pieceCountAtMost,
+                                  final int nextSum, final int contiguousPieces) {
         if (nextSum == 0 && contiguousPieces > 0) {
             if (contiguousPieces > pieceCountAtMost) {
                 return contiguousPieces;
