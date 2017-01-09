@@ -98,7 +98,7 @@ public class GameState {
         return bestMove;
     }
 
-    public int getMaximumPieceCount() {
+    int getMaximumPieceCount() {
         return bestAttempt;
     }
 
