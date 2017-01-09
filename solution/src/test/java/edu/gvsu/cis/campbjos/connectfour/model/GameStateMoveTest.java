@@ -18,11 +18,11 @@ public class GameStateMoveTest {
         // @formatter:off
        String input =
                "[[0, 2, 0, 0, 0, 0, 0], " +
-               "[0, 1, 0, 0, 0, 0, 0], " +
-               "[0, 2, 0, 0, 0, 0, 0], " +
-               "[0, 1, 0, 0, 0, 0, 0], " +
-               "[0, 2, 0, 0, 0, 0, 0], " +
-               "[0, 1, 0, 0, 0, 0, 0]]";
+                "[0, 1, 0, 0, 0, 0, 0], " +
+                "[0, 2, 0, 0, 0, 0, 0], " +
+                "[0, 1, 0, 0, 0, 0, 0], " +
+                "[0, 2, 0, 0, 0, 0, 0], " +
+                "[0, 1, 0, 0, 0, 0, 0]]";
         // @formatter:on
         GameState gameState = createGameStatePlayerOne(input);
 

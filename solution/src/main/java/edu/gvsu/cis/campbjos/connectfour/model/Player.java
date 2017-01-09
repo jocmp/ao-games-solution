@@ -18,7 +18,7 @@ class Player {
 
     private final int piece;
 
-    private int bestPossibleMove;
+    private int bestAttempt;
 
     Player(String playerValue) throws IllegalArgumentException {
         switch (playerValue) {
@@ -33,6 +33,7 @@ class Player {
                         format("New player value must be either \"%s\" or \"%s\"",
                                 PLAYER_ONE_VALUE, PLAYER_TWO_VALUE));
         }
+        bestAttempt = 0;
     }
 
     static Player nextPlayer(final Player currentPlayer) {
@@ -64,7 +65,7 @@ class Player {
                     return upperBound;
                 }
             }
-            bestPossibleMove = max(possibleResults, (lhs, rhs) -> lhs.score - rhs.score).move;
+            bestAttempt = max(possibleResults, (lhs, rhs) -> lhs.score - rhs.score).move;
             return alpha;
         } else {
             int beta = upperBound;
@@ -81,8 +82,8 @@ class Player {
         }
     }
 
-    int getBestPossibleMove() {
-        return bestPossibleMove;
+    int getBestAttempt() {
+        return bestAttempt;
     }
 
     private static int getScore(final GameState game, int depth, int piece) {
@@ -98,6 +99,12 @@ class Player {
             }
         }
         return score;
+    }
+
+    void updateBestPossibleMove(int move) {
+        if (move > bestAttempt) {
+            bestAttempt = move;
+        }
     }
 
     int getPiece() {

@@ -19,7 +19,6 @@ public class GameState {
     private final Player currentPlayer;
     private final Player opponent;
     private final int winner;
-    private int bestAttempt;
 
     private Set<Integer> availableMoves;
 
@@ -27,7 +26,6 @@ public class GameState {
         this.board = board;
         this.currentPlayer = currentPlayer;
         this.opponent = Player.nextPlayer(currentPlayer);
-        bestAttempt = 0;
         winner = checkForWinner();
     }
 
@@ -91,7 +89,7 @@ public class GameState {
 
     public int makeMove() {
         currentPlayer.runMinimax(this, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        int bestMove = currentPlayer.getBestPossibleMove();
+        int bestMove = currentPlayer.getBestAttempt();
         if (!getAvailableMoves().contains(bestMove)) {
             return new ArrayList<>(getAvailableMoves()).get(0);
         }
@@ -99,7 +97,7 @@ public class GameState {
     }
 
     int getMaximumPieceCount() {
-        return bestAttempt;
+        return currentPlayer.getBestAttempt();
     }
 
     Set<Integer> getAvailableMoves() {
@@ -233,9 +231,7 @@ public class GameState {
                 return contiguousPieces;
             }
         }
-        if (pieceCountAtMost > bestAttempt) {
-            bestAttempt = pieceCountAtMost;
-        }
+        currentPlayer.updateBestPossibleMove(pieceCountAtMost);
         return pieceCountAtMost;
     }
 
