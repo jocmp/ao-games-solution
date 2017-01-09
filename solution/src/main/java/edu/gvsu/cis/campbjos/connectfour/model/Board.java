@@ -22,7 +22,7 @@ class Board {
 
     private final List<List<Integer>> grid;
 
-    private Board(List<List<Integer>> grid) {
+    private Board(final List<List<Integer>> grid) {
         this.grid = new ArrayList<>(grid.size());
         this.grid.addAll(grid);
     }
@@ -31,7 +31,7 @@ class Board {
         return new Board(new Gson().fromJson(grid, GRID_TYPE));
     }
 
-    void placePiece(Player player, int column) {
+    void placePiece(final Player player, final int column) {
         for (int row = ROW_SIZE - 1; row >= 0; row--) {
             if (isOpenSpace(row, column)) {
                 grid.get(row).set(column, player.getPiece());
@@ -40,7 +40,7 @@ class Board {
         }
     }
 
-    int at(int row, int column) throws IndexOutOfBoundsException {
+    int at(final int row, final int column) throws IndexOutOfBoundsException {
         boolean isRowInBounds = row < ROW_SIZE && row >= 0;
         boolean isColumnInBounds = column < COLUMN_SIZE && column >= 0;
 
@@ -51,7 +51,7 @@ class Board {
                 format("row=%s column=%s is out of bounds!", row, column));
     }
 
-    boolean isOpenSpace(int row, int column) throws IndexOutOfBoundsException {
+    boolean isOpenSpace(final int row, final int column) throws IndexOutOfBoundsException {
         try {
             return at(row, column) == 0;
         } catch (IndexOutOfBoundsException e) {

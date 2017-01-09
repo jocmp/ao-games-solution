@@ -22,7 +22,7 @@ public class GameState {
 
     private Set<Integer> availableMoves;
 
-    GameState(Board board, Player currentPlayer) {
+    GameState(final Board board, final Player currentPlayer) {
         this.board = board;
         this.currentPlayer = currentPlayer;
         this.opponent = Player.nextPlayer(currentPlayer);
@@ -71,7 +71,7 @@ public class GameState {
         return 0;
     }
 
-    boolean isWinner(Player player) {
+    boolean isWinner(final Player player) {
         return winner == player.getPiece();
     }
 
@@ -115,7 +115,7 @@ public class GameState {
         return availableMoves;
     }
 
-    GameState getChildState(int column) {
+    GameState getChildState(final int column) {
         Board nextBoard = board.duplicate();
         nextBoard.placePiece(currentPlayer, column);
         return new GameState(nextBoard, opponent);
@@ -133,7 +133,7 @@ public class GameState {
         return checkStraightLineWin(true);
     }
 
-    private int checkStraightLineWin(boolean isHorizontal) {
+    private int checkStraightLineWin(final boolean isHorizontal) {
         int contiguousPieces = 0;
         int pieceCountAtMost = 0;
 
@@ -179,7 +179,7 @@ public class GameState {
         return checkDiagonalWin(false);
     }
 
-    private int checkDiagonalWin(boolean includeForwardOffset) {
+    private int checkDiagonalWin(final boolean includeForwardOffset) {
         int diagonalLimit = ROW_SIZE + COLUMN_SIZE - 1;
         int piecesAtMost = 0;
         for (int diagonalSlice = 0; diagonalSlice < diagonalLimit; diagonalSlice++) {
@@ -235,14 +235,14 @@ public class GameState {
         return pieceCountAtMost;
     }
 
-    private int getDiagonalStartOffset(int diagonalSlice) {
+    private int getDiagonalStartOffset(final int diagonalSlice) {
         if (diagonalSlice < ROW_SIZE) {
             return 0;
         }
         return diagonalSlice - ROW_SIZE + 1;
     }
 
-    private int getDiagonalEndOffset(int diagonalSlice) {
+    private int getDiagonalEndOffset(final int diagonalSlice) {
         if (diagonalSlice < COLUMN_SIZE) {
             return 0;
         }

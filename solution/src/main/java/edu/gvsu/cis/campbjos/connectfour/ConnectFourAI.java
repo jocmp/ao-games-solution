@@ -13,7 +13,7 @@ public class ConnectFourAI implements Callable<Integer> {
     private final GameState gameState;
     private final long timeout;
 
-    private ConnectFourAI(String board, String player, int timeout) {
+    private ConnectFourAI(final String board, final String player, final int timeout) {
         this.timeout = (long) timeout;
         gameState = GameState.createFromJson(board, player);
     }
@@ -70,7 +70,7 @@ public class ConnectFourAI implements Callable<Integer> {
         return new ConnectFourAI(boardArg, playerArg, timeout);
     }
 
-    private static String getFlagValue(final String[] args, int currentIndex) {
+    private static String getFlagValue(final String[] args, final int currentIndex) {
         boolean hasNextArg = currentIndex <= args.length - 2;
 
         if (hasNextArg) {
@@ -79,7 +79,7 @@ public class ConnectFourAI implements Callable<Integer> {
         return null;
     }
 
-    private static int parseTimeout(String timeoutArgument) {
+    private static int parseTimeout(final String timeoutArgument) {
         try {
             return Integer.parseInt(timeoutArgument);
         } catch (NumberFormatException e) {

@@ -20,7 +20,7 @@ class Player {
 
     private int bestAttempt;
 
-    Player(String playerValue) throws IllegalArgumentException {
+    Player(final String playerValue) throws IllegalArgumentException {
         switch (playerValue) {
             case PLAYER_ONE_VALUE:
                 piece = PLAYER_ONE_PIECE;
@@ -86,7 +86,7 @@ class Player {
         return bestAttempt;
     }
 
-    private static int getScore(final GameState game, int depth, int piece) {
+    private static int getScore(final GameState game, final int depth, final int piece) {
         int score = game.getMaximumPieceCount();
         if (game.isOver()) {
             int winner = game.getWinner();
@@ -101,7 +101,7 @@ class Player {
         return score;
     }
 
-    void updateBestPossibleMove(int move) {
+    void updateBestPossibleMove(final int move) {
         if (move > bestAttempt) {
             bestAttempt = move;
         }
