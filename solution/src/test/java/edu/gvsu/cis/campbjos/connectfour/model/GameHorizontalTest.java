@@ -9,18 +9,17 @@ import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid
 import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_VALUE;
 import static org.junit.Assert.assertFalse;
 
-public class GameVerticalTest {
+public class GameHorizontalTest {
 
     @Test(timeout = TIMEOUT_FOUR_MOVES)
-    public void playGameToVerticalWin() {
-        Board currentBoard = Board.createFromJson(createEmptyGrid());
+    public void playGameToHorizontalWin() {
         final Player playerOne = new Player(PLAYER_ONE_VALUE);
         final Player playerTwo = Player.nextPlayer(playerOne);
-        final int firstColumn = 0;
 
+        Board currentBoard = Board.createFromJson(createEmptyGrid());
 
         for (int move = 0; move < PIECE_COUNT_TO_WIN; move++) {
-            currentBoard = playOnBoard(currentBoard, playerTwo, firstColumn);
+            currentBoard = playOnBoard(currentBoard, playerTwo, move);
         }
 
         GameState gameState = new GameState(currentBoard, playerOne);

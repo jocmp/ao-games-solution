@@ -19,7 +19,7 @@ public class GameState {
     private final Player currentPlayer;
     private final Player opponent;
     private final int winner;
-    private Attempt bestAttempt;
+    private int bestAttempt;
 
     private Set<Integer> availableMoves;
 
@@ -27,8 +27,8 @@ public class GameState {
         this.board = board;
         this.currentPlayer = currentPlayer;
         this.opponent = Player.nextPlayer(currentPlayer);
+        bestAttempt = 0;
         winner = checkForWinner();
-
     }
 
     public static GameState createFromJson(final String serializedBoard, final String playerValue) {
@@ -98,14 +98,12 @@ public class GameState {
         return bestMove;
     }
 
-    int getMaximumPieceCount() {
-        return bestAttempt.contiguousCount;
+    public int getMaximumPieceCount() {
+        return bestAttempt;
     }
 
     /**
-     * Check from the bottom of the board to the top
-     *
-     * @return a list of available spaces
+     * Iterate from the bottom to the top
      */
     Set<Integer> getAvailableMoves() {
         if (availableMoves != null) {
@@ -143,8 +141,10 @@ public class GameState {
     private int checkStraightLineWin(boolean isHorizontal) {
         int contiguousPieces = 0;
         int pieceCountAtMost = 0;
+
         int rowBound;
         int columnBound;
+
         if (isHorizontal) {
             rowBound = ROW_SIZE;
             columnBound = COLUMN_SIZE - 1;
@@ -166,7 +166,6 @@ public class GameState {
                         nextPiece);
                 if (currentPiece == currentPlayer.getPiece()) {
                     pieceCountAtMost = updatePieceCountAtMost(pieceCountAtMost, nextSum, contiguousPieces);
-                    bestAttempt = new Attempt(currentPlayer.getPiece(), pieceCountAtMost);
                 }
                 contiguousPieces = nextSum;
 
@@ -222,7 +221,6 @@ public class GameState {
                 int nextSum = getSumOfPieces(contiguousPieces, piece, nextPiece);
                 if (piece == currentPlayer.getPiece()) {
                     pieceCountAtMost = updatePieceCountAtMost(pieceCountAtMost, nextSum, contiguousPieces);
-                    bestAttempt = new Attempt(currentPlayer.getPiece(), pieceCountAtMost);
                 }
                 contiguousPieces = nextSum;
 
@@ -241,6 +239,9 @@ public class GameState {
             if (contiguousPieces > pieceCountAtMost) {
                 return contiguousPieces;
             }
+        }
+        if (pieceCountAtMost > bestAttempt) {
+            bestAttempt = pieceCountAtMost;
         }
         return pieceCountAtMost;
     }

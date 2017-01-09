@@ -2,12 +2,16 @@ package edu.gvsu.cis.campbjos.connectfour.model;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 
+import static edu.gvsu.cis.campbjos.connectfour.model.Board.ROW_SIZE;
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.PIECE_COUNT_TO_WIN;
 import static edu.gvsu.cis.campbjos.connectfour.model.GameState.createFromJson;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createEmptyGrid;
 import static edu.gvsu.cis.campbjos.connectfour.model.GridHelper.createFullBoard;
 import static edu.gvsu.cis.campbjos.connectfour.model.Player.PLAYER_ONE_VALUE;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 
@@ -79,5 +83,22 @@ public class GameStateTest {
         GameState game = new GameState(board, playerOne);
 
         assertTrue(game.isWinner(playerTwo));
+    }
+
+    @Test
+    public void checkWinnerIsDraw() {
+        List<List<Integer>> grid = new ArrayList<>();
+        int rowLimit = ROW_SIZE / 2;
+
+        for (int i = 0; i < rowLimit; i++) {
+            grid.add(asList(1, 1, 2, 2, 1, 1, 2));
+            grid.add(asList(2, 2, 1, 1, 2, 2, 1));
+        }
+
+        GameState game = new GameState(
+                Board.createFromJson(grid.toString()),
+                new Player(PLAYER_ONE_VALUE));
+
+        assertEquals(game.getWinner(), GameState.DRAW);
     }
 }

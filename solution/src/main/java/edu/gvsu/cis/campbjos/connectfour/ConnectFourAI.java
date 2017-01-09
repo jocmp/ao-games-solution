@@ -2,13 +2,15 @@ package edu.gvsu.cis.campbjos.connectfour;
 
 import edu.gvsu.cis.campbjos.connectfour.model.GameState;
 
+import java.util.concurrent.*;
+
 /**
  * Format:
  * <code>
  * your-ai.sh -b "...board json..." -p "player-one" -t "7000"
  * </code>
  */
-public class ConnectFourAI {
+public class ConnectFourAI implements Callable<Integer> {
 
     private static final String BOARD_FLAG = "-b";
     private static final String PLAYER_FLAG = "-p";
@@ -22,6 +24,11 @@ public class ConnectFourAI {
         gameState = GameState.createFromJson(board, player);
     }
 
+    @Override
+    public Integer call() throws Exception {
+        return gameState.makeMove();
+    }
+
     public static void main(String[] args) {
         if (args.length < 3) {
             System.out.println("Not enough arguments!");
@@ -29,7 +36,19 @@ public class ConnectFourAI {
         }
         final ConnectFourAI connectFourAI = parseConnectFourState(args);
 
-        System.exit(connectFourAI.gameState.makeMove());
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Integer> runAI = executor.submit(connectFourAI);
+
+        int move;
+
+        try {
+            move = runAI.get(connectFourAI.timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            // Last ditch effort
+            move = 0;
+        }
+
+        System.exit(move);
     }
 
     private static ConnectFourAI parseConnectFourState(final String[] args) {
